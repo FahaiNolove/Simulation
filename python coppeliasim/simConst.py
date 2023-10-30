@@ -780,45 +780,4 @@ simx_error_split_progress_flag    =0x000010        # previous similar command no
 simx_error_local_error_flag        =0x000020        # command caused an error on the client side 
 simx_error_initialize_error_flag        =0x000040        # simxStart was not yet called 
 
-# for simxCreatePureShape function
-simx_header_size = 7
-simx_header_cmd_start = 1
-simx_cmd_create_pure_shape = 21
-simx_header_cmd_stop = 0
-
-simx_opmode_oneshot_wait = 0x0001
-
-##################################################################################################################################################
-################################################# added for creating a cuboid in the environment #################################################
-sim_shape_type_cuboid = 0
-sim_shape_type_sphere = 2
-sim_shape_type_cylinder = 3
-sim_shape_type_cone = 4
-sim_shape_type_heightfield = 10
-sim_shape_type_mesh = 11
-
-simulationparameter_show_lines = 1012
-sim_boolparam_show_infotext = 28
-
-# Object/collider shape types
-sim_objshape_type_none = 0
-sim_objshape_type_spheroid = 1
-sim_objshape_type_cylinder = 2
-sim_objshape_type_box = 3
-sim_objshape_type_mesh = 4
-
-# Object/collider types
-sim_objcollider_type_none = 0
-sim_objcollider_type_spheroid = 1
-sim_objcollider_type_cylinder = 2
-sim_objcollider_type_box = 3
-sim_objcollider_type_mesh = 4
-sim_objcollider_type_heightfield = 5
-sim_objcollider_type_plane = 6
-
-# Non-convex shapes
-sim_objcollider_non_convex = 0x80
-
-simulationparam_bullet_use_ccd = 2981
-sim_boolparam_shape_dynamic_approximation = 2039  # enable/disable dynamic shape approximation for dynamic objects
 

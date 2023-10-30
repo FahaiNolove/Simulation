@@ -4,6 +4,7 @@ import numpy as np
 import math
 import time
 
+# https://www.coppeliarobotics.com/helpFiles/en/legacyRemoteApiOverview.htm
 # Connect to the CoppeliaSim server
 sim.simxFinish(-1)
 clientID = sim.simxStart('127.0.0.1', 19999, True, True, 5000, 5)
@@ -30,7 +31,7 @@ if clientID == -1:
 #         self.gridy = rel_node_loc_y
 #         self.dummyHandle = dummyHandle
 #         self.neighbors=[]
-        
+
 
 # # Loop through the grid and create the dummy objects (i, j) refers to the relative locations (starting from (0, 0)), (x, y) refers to the absoltue location
 # for i, x in enumerate(np.arange(2, -2.5, -0.5)):
@@ -81,14 +82,17 @@ if clientID == -1:
 # let AMR follows a path
 ##################################################################################################################################
  # Get handles for the Pioneer robot and its wheels
-error, pioneer_handle = sim.simxGetObjectHandle(clientID, 'Pioneer_p3dx', sim.simx_opmode_blocking)
-error, left_motor_handle = sim.simxGetObjectHandle(clientID, 'Pioneer_p3dx_leftMotor', sim.simx_opmode_blocking)
-error, right_motor_handle = sim.simxGetObjectHandle(clientID, 'Pioneer_p3dx_rightMotor', sim.simx_opmode_blocking)
+error, pioneer_handle = sim.simxGetObjectHandle(clientID, 'Pioneer_p3dx', sim.simx_opmode_oneshot_wait)
+error, left_motor_handle = sim.simxGetObjectHandle(clientID, 'Pioneer_p3dx_leftMotor', sim.simx_opmode_oneshot_wait)
+error, right_motor_handle = sim.simxGetObjectHandle(clientID, 'Pioneer_p3dx_rightMotor', sim.simx_opmode_oneshot_wait)
 
 # Drive the robot forward for 5 seconds
-sim.simxSetJointTargetVelocity(clientID, left_motor_handle, 2, sim.simx_opmode_oneshot)
-sim.simxSetJointTargetVelocity(clientID, right_motor_handle, 2, sim.simx_opmode_oneshot)
-time.sleep(1)
+sim.simxSetJointTargetVelocity(clientID, left_motor_handle, 2, sim.simx_opmode_blocking) # velocity = 2
+sim.simxSetJointTargetVelocity(clientID, right_motor_handle, 2, sim.simx_opmode_blocking) # velocity = 2
+
+# sim.simxSetJointTargetVelocity(clientID, left_motor_handle, 2, sim.simx_opmode_oneshot) # velocity = 2
+# sim.simxSetJointTargetVelocity(clientID, right_motor_handle, 2, sim.simx_opmode_oneshot) # velocity = 2
+# time.sleep(1)
 
 
 # Turn the robot by a specified angle
@@ -116,15 +120,15 @@ else:
 #     error, orientation = sim.simxGetObjectOrientation(clientID, pioneer_handle, -1, sim.simx_opmode_blocking)
     #current_angle = orientation[2]
 
-orientation = sim.simxGetObjectOrientation(clientID, pioneer_handle, -1, sim.simx_opmode_blocking)
-# Turn the robot 90 degrees
-sim.simxSetJointTargetVelocity(clientID, left_motor_handle, 1, sim.simx_opmode_oneshot)
-sim.simxSetJointTargetVelocity(clientID, right_motor_handle, -1, sim.simx_opmode_oneshot)
-#time.sleep(int(math.radians(90) / 1))
+# orientation = sim.simxGetObjectOrientation(clientID, pioneer_handle, -1, sim.simx_opmode_blocking)
+# # Turn the robot 90 degrees
+# sim.simxSetJointTargetVelocity(clientID, left_motor_handle, 1, sim.simx_opmode_oneshot)
+# sim.simxSetJointTargetVelocity(clientID, right_motor_handle, -1, sim.simx_opmode_oneshot)
+# #time.sleep(int(math.radians(90) / 1))
 
-# Stop the robot
-sim.simxSetJointTargetVelocity(clientID, left_motor_handle, 0, sim.simx_opmode_oneshot)
-sim.simxSetJointTargetVelocity(clientID, right_motor_handle, 0, sim.simx_opmode_oneshot)
+# # Stop the robot
+# sim.simxSetJointTargetVelocity(clientID, left_motor_handle, 0, sim.simx_opmode_oneshot)
+# sim.simxSetJointTargetVelocity(clientID, right_motor_handle, 0, sim.simx_opmode_oneshot)
 
 #amr_name = 'PioneerP3DX'
 # amr_name = 'Cuboid'
