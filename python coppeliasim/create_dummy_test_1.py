@@ -86,27 +86,29 @@ error, pioneer_handle = sim.simxGetObjectHandle(clientID, 'Pioneer_p3dx', sim.si
 error, left_motor_handle = sim.simxGetObjectHandle(clientID, 'Pioneer_p3dx_leftMotor', sim.simx_opmode_oneshot_wait)
 error, right_motor_handle = sim.simxGetObjectHandle(clientID, 'Pioneer_p3dx_rightMotor', sim.simx_opmode_oneshot_wait)
 
-# # Get Pioneer robot's postion
-# error, robot_position = sim.simxGetObjectPosition(clientID, pioneer_handle, -1, sim.simx_opmode_blocking)
-# # print("Robot's Position:", robot_position)
+# Get Pioneer robot's postion
+error, robot_position = sim.simxGetObjectPosition(clientID, pioneer_handle, -1, sim.simx_opmode_blocking)
+# print("Robot's Position:", robot_position)
 
-# # Define the target position
-# target_position = [1, 1, robot_position[2]]
-# tolerance = 0.05 # set the tolerance
+# Define the target position
+target_position = [1, 1, robot_position[2]]
+tolerance = 0.05 # set the tolerance
 
-# # Move to the target position one axis at a time
-# while robot_position[0] < target_position[0] or robot_position[1] < target_position[1]:
-#     if (robot_position[0] < target_position[0]) & (abs(target_position[0]-robot_position[0]) > tolerance):
-#         # Move in the x-direction
-#         sim.simxSetJointTargetVelocity(clientID, left_motor_handle, 2, sim.simx_opmode_oneshot)
-#         sim.simxSetJointTargetVelocity(clientID, right_motor_handle, 2, sim.simx_opmode_oneshot)
-#     else:
-#         # Stop moving in the x-direction
-#         sim.simxSetJointTargetVelocity(clientID, left_motor_handle, 0, sim.simx_opmode_oneshot)
-#         sim.simxSetJointTargetVelocity(clientID, right_motor_handle, 0, sim.simx_opmode_oneshot)
-#     # get current Pioneer robot's postion
-#     error, robot_position = sim.simxGetObjectPosition(clientID, pioneer_handle, -1, sim.simx_opmode_blocking)
-#     print("Robot's Position:", robot_position)
+# Move to the target position one axis at a time
+while (abs(target_position[0]-robot_position[0]) > tolerance):
+
+        # Move in the x-direction
+    sim.simxSetJointTargetVelocity(clientID, left_motor_handle, 2, sim.simx_opmode_oneshot)
+    sim.simxSetJointTargetVelocity(clientID, right_motor_handle, 2, sim.simx_opmode_oneshot)
+    # get current Pioneer robot's postion
+    error, robot_position = sim.simxGetObjectPosition(clientID, pioneer_handle, -1, sim.simx_opmode_blocking)
+    print("Robot's Position:", robot_position)
+
+
+# Stop moving in the x-direction
+sim.simxSetJointTargetVelocity(clientID, left_motor_handle, 0, sim.simx_opmode_oneshot)
+sim.simxSetJointTargetVelocity(clientID, right_motor_handle, 0, sim.simx_opmode_oneshot)
+
 
 ##################################################################################################################################
 
@@ -126,18 +128,26 @@ outer_wheel_velocity = angular_velocity * (wheel_distance / 2)
 current_orientation = [0.0, 0.0, 0.0]  # Assuming a starting orientation of [0.0, 0.0, 0.0]
 
 # Control loop to monitor the robot's orientation
-if abs(current_orientation[2]) < abs(target_angle):
-    sim.simxSetJointTargetVelocity(clientID, left_motor_handle, inner_wheel_velocity, sim.simx_opmode_oneshot)
-    sim.simxSetJointTargetVelocity(clientID, right_motor_handle, outer_wheel_velocity, sim.simx_opmode_oneshot)
+while abs(current_orientation[2]) < abs(target_angle):
+    sim.simxSetJointTargetVelocity(clientID, left_motor_handle, inner_wheel_velocity, sim.simx_opmode_streaming)
+    sim.simxSetJointTargetVelocity(clientID, right_motor_handle, outer_wheel_velocity, sim.simx_opmode_streaming)
     sim.simxSynchronousTrigger(clientID)
-else:
-    # Stop moving in the x-direction
-    sim.simxSetJointTargetVelocity(clientID, left_motor_handle, 0, sim.simx_opmode_oneshot)
-    sim.simxSetJointTargetVelocity(clientID, right_motor_handle, 0, sim.simx_opmode_oneshot)
 
-_, current_orientation = sim.simxGetObjectOrientation(clientID, pioneer_handle, -1, sim.simx_opmode_streaming)
-current_orientation_degrees = [math.degrees(angle) for angle in current_orientation]
-print("Robot's Orientation (Degrees):", current_orientation_degrees)
+    _, current_orientation = sim.simxGetObjectOrientation(clientID, pioneer_handle, -1, sim.simx_opmode_streaming)
+    current_orientation_degrees = [math.degrees(angle) for angle in current_orientation]
+    print("Robot's Orientation (Degrees):", current_orientation_degrees)
+
+    # Stop moving in the x-direction
+print("stop")
+while abs(current_orientation[2]) > abs(target_angle):
+    sim.simxSetJointTargetVelocity(clientID, left_motor_handle, 0, sim.simx_opmode_streaming)
+    sim.simxSetJointTargetVelocity(clientID, right_motor_handle, 0, sim.simx_opmode_streaming)
+    sim.simxSynchronousTrigger(clientID)
+
+    _, current_orientation = sim.simxGetObjectOrientation(clientID, pioneer_handle, -1, sim.simx_opmode_streaming)
+    current_orientation_degrees = [math.degrees(angle) for angle in current_orientation]
+    print("Robot's Orientation (Degrees):", current_orientation_degrees)
+print("stop complete")
 
 # desired_velocity = 0.1
 # desired_rotation_rate = 0.1
