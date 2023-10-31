@@ -86,80 +86,83 @@ error, pioneer_handle = sim.simxGetObjectHandle(clientID, 'Pioneer_p3dx', sim.si
 error, left_motor_handle = sim.simxGetObjectHandle(clientID, 'Pioneer_p3dx_leftMotor', sim.simx_opmode_oneshot_wait)
 error, right_motor_handle = sim.simxGetObjectHandle(clientID, 'Pioneer_p3dx_rightMotor', sim.simx_opmode_oneshot_wait)
 
-# [-0.2161087840795517, -0.27541384100914, 0.1386490911245346]
-# Get Pioneer robot's postion
-error, robot_position = sim.simxGetObjectPosition(clientID, pioneer_handle, -1, sim.simx_opmode_blocking)
-print("Robot's Position:", robot_position)
+# # Get Pioneer robot's postion
+# error, robot_position = sim.simxGetObjectPosition(clientID, pioneer_handle, -1, sim.simx_opmode_blocking)
+# # print("Robot's Position:", robot_position)
 
-#sim.simxSetJointTargetVelocity(clientID, left_motor_handle, 2, sim.simx_opmode_streaming) # velocity = 2
-#sim.simxSetJointTargetVelocity(clientID, right_motor_handle, 2, sim.simx_opmode_streaming) # velocity = 2
- 
-# if error == sim.simx_return_ok:
-#         sim.simxSetJointTargetVelocity(clientID, left_motor_handle, 2, sim.simx_opmode_blocking) # velocity = 2
-#         sim.simxSetJointTargetVelocity(clientID, right_motor_handle, 2, sim.simx_opmode_blocking) # velocity = 2
-#         error, robot_position = sim.simxGetObjectPosition(clientID, pioneer_handle, -1, sim.simx_opmode_blocking)
-#         print("Robot's Position:", robot_position)
+# # Define the target position
+# target_position = [1, 1, robot_position[2]]
+# tolerance = 0.05 # set the tolerance
 
-
-# def get_robot_position(clientID, robot_handle):
-#     errorCode, position = sim.simxGetObjectPosition(clientID, robot_handle, -1, sim.simx_opmode_blocking)
-#     if errorCode == sim.simx_return_ok:
-#         return position
+# # Move to the target position one axis at a time
+# while robot_position[0] < target_position[0] or robot_position[1] < target_position[1]:
+#     if (robot_position[0] < target_position[0]) & (abs(target_position[0]-robot_position[0]) > tolerance):
+#         # Move in the x-direction
+#         sim.simxSetJointTargetVelocity(clientID, left_motor_handle, 2, sim.simx_opmode_oneshot)
+#         sim.simxSetJointTargetVelocity(clientID, right_motor_handle, 2, sim.simx_opmode_oneshot)
 #     else:
-#         return None
+#         # Stop moving in the x-direction
+#         sim.simxSetJointTargetVelocity(clientID, left_motor_handle, 0, sim.simx_opmode_oneshot)
+#         sim.simxSetJointTargetVelocity(clientID, right_motor_handle, 0, sim.simx_opmode_oneshot)
+#     # get current Pioneer robot's postion
+#     error, robot_position = sim.simxGetObjectPosition(clientID, pioneer_handle, -1, sim.simx_opmode_blocking)
+#     print("Robot's Position:", robot_position)
+
+##################################################################################################################################
+
+# Turn the robot by a specified angle
+target_angle = math.radians(90) # Turn by 90 degrees
+print(target_angle)
+# Define robot-specific parameters
+wheel_distance = 0.33  # Distance between the wheels (adjust for your robot)
+wheel_radius = 0.195  # Radius of the wheels (adjust for your robot)
+# Calculate the required wheel velocities
+wheel_speed = 1  # Adjust the speed as needed
+angular_velocity = wheel_speed / wheel_radius
+inner_wheel_velocity = -angular_velocity * (wheel_distance / 2)
+outer_wheel_velocity = angular_velocity * (wheel_distance / 2)
+
+# Initialize current_orientation to a starting value
+current_orientation = [0.0, 0.0, 0.0]  # Assuming a starting orientation of [0.0, 0.0, 0.0]
+
+# Control loop to monitor the robot's orientation
+if abs(current_orientation[2]) < abs(target_angle):
+    sim.simxSetJointTargetVelocity(clientID, left_motor_handle, inner_wheel_velocity, sim.simx_opmode_oneshot)
+    sim.simxSetJointTargetVelocity(clientID, right_motor_handle, outer_wheel_velocity, sim.simx_opmode_oneshot)
+    sim.simxSynchronousTrigger(clientID)
+else:
+    # Stop moving in the x-direction
+    sim.simxSetJointTargetVelocity(clientID, left_motor_handle, 0, sim.simx_opmode_oneshot)
+    sim.simxSetJointTargetVelocity(clientID, right_motor_handle, 0, sim.simx_opmode_oneshot)
+
+_, current_orientation = sim.simxGetObjectOrientation(clientID, pioneer_handle, -1, sim.simx_opmode_streaming)
+current_orientation_degrees = [math.degrees(angle) for angle in current_orientation]
+print("Robot's Orientation (Degrees):", current_orientation_degrees)
+
+# desired_velocity = 0.1
+# desired_rotation_rate = 0.1
+# d = 0.381 # wheel separation for Pioneer P3-DX robot
+
+# v_r = (desired_velocity+d*desired_rotation_rate)
+# v_l = (desired_velocity-d*desired_rotation_rate)
+
+
+# # Move to the target position one axis at a time
+# while robot_position[0] < target_position[0]:
+#     # Move in the x-direction
+#     sim.simxSetJointTargetVelocity(clientID, left_motor_handle, 2, sim.simx_opmode_oneshot)
+#     sim.simxSetJointTargetVelocity(clientID, right_motor_handle, 2, sim.simx_opmode_oneshot)
+
+#     # Get the updated position
+#     error, robot_position = sim.simxGetObjectPosition(clientID, pioneer_handle, -1, sim.simx_opmode_blocking)
+
+# while robot_position[1] < target_position[1]:
+#     # Move in the y-direction
+#     sim.simxSetJointTargetVelocity(clientID, left_motor_handle, 2, sim.simx_opmode_oneshot)
+#     sim.simxSetJointTargetVelocity(clientID, right_motor_handle, 2, sim.simx_opmode_oneshot)
     
-# def main():
-#     robot_name = 'Pioneer_p3dx'  # Replace with the name of your robot in CoppeliaSim
-#     errorCode, robot_handle = sim.simxGetObjectHandle(clientID, robot_name, sim.simx_opmode_blocking)
-#     errorCode, left_motor_handle = sim.simxGetObjectHandle(clientID, 'Pioneer_p3dx_leftMotor', sim.simx_opmode_oneshot_wait)
-#     errorCode, right_motor_handle = sim.simxGetObjectHandle(clientID, 'Pioneer_p3dx_rightMotor', sim.simx_opmode_oneshot_wait)
-#     if errorCode == sim.simx_return_ok:
-#         sim.simxSetJointTargetVelocity(clientID, left_motor_handle, 2, sim.simx_opmode_streaming) # velocity = 2
-#         sim.simxSetJointTargetVelocity(clientID, right_motor_handle, 2, sim.simx_opmode_streaming) # velocity = 2
-#         while True:
-#             position = get_robot_position(clientID, robot_handle)
-#             if position:
-#                 print(f"Robot Position: {position}")
-#     else:
-#         print(f"Failed to get the handle for {robot_name}")
-
-
-
-
-
-# Define the target position
-target_position = [1, 1, robot_position[2]]
-
-# Move to the target position one axis at a time
-while robot_position[0] < target_position[0] or robot_position[1] < target_position[1]:
-    if robot_position[0] < target_position[0]:
-        # Move in the x-direction
-        sim.simxSetJointTargetVelocity(clientID, left_motor_handle, 2, sim.simx_opmode_oneshot)
-        sim.simxSetJointTargetVelocity(clientID, right_motor_handle, 2, sim.simx_opmode_oneshot)
-    else:
-        # Stop moving in the x-direction
-        sim.simxSetJointTargetVelocity(clientID, left_motor_handle, 0, sim.simx_opmode_oneshot)
-        sim.simxSetJointTargetVelocity(clientID, right_motor_handle, 0, sim.simx_opmode_oneshot)
-    error, robot_position = sim.simxGetObjectPosition(clientID, pioneer_handle, -1, sim.simx_opmode_blocking)
-    print("Robot's Position:", robot_position)
-
-# Move to the target position one axis at a time
-while robot_position[0] < target_position[0]:
-    # Move in the x-direction
-    sim.simxSetJointTargetVelocity(clientID, left_motor_handle, 2, sim.simx_opmode_oneshot)
-    sim.simxSetJointTargetVelocity(clientID, right_motor_handle, 2, sim.simx_opmode_oneshot)
-
-    # Get the updated position
-    error, robot_position = sim.simxGetObjectPosition(clientID, pioneer_handle, -1, sim.simx_opmode_blocking)
-
-while robot_position[1] < target_position[1]:
-    # Move in the y-direction
-    sim.simxSetJointTargetVelocity(clientID, left_motor_handle, 2, sim.simx_opmode_oneshot)
-    sim.simxSetJointTargetVelocity(clientID, right_motor_handle, 2, sim.simx_opmode_oneshot)
-    
-    # Get the updated position
-    res, robot_position = sim.simxGetObjectPosition(clientID, pioneer_handle, -1, sim.simx_opmode_blocking)
-
+#     # Get the updated position
+#     res, robot_position = sim.simxGetObjectPosition(clientID, pioneer_handle, -1, sim.simx_opmode_blocking)
 
 
 
