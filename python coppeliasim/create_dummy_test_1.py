@@ -1,10 +1,10 @@
 import sim
 import sys
-sys.path.append('C:\\Users\\zlxan\\AppData\\Local\\Programs\\Python\\Python311\\lib\\site-packages')
 import numpy as np
 import math
 import time
 
+# https://www.coppeliarobotics.com/helpFiles/en/legacyRemoteApiOverview.htm
 # Connect to the CoppeliaSim server
 sim.simxFinish(-1)
 clientID = sim.simxStart('127.0.0.1', 19999, True, True, 5000, 5)
