@@ -171,7 +171,7 @@ y = random.choice(y_points)
 z = 0  # Assuming the grid is on the ground plane
 
 random_dummy = [x, y, z]
-random_dummy = [-2, 2, z]
+#random_dummy = [-2, 2, z]
 
 # Create the dummy
 ret, dummyobject = sim.simxCreateDummy(clientID, size=0.1, color=[255, 0, 0], operationMode=sim.simx_opmode_blocking)
@@ -201,8 +201,13 @@ print("Robot's Orientation:", current_orientation)
 radian_tolerance = 1 * (pi / 180)  # 5 degrees tolerance (0.08727 radians)
 distance_tolerance = 0.4  # set the tolerance 0.05 from dummy position 
 
-# Control loop to monitor the robot's orientation
-target_angle = math.radians(180) # Turn by from 90 to 180 degrees
+# Calculate differences
+dx = x - robot_position[0]
+dy = y - robot_position[1]
+
+# Calculate the angle in radians
+target_angle = math.atan2(dy, dx)
+print("Angle to the point (in radians):", target_angle)
 
 # Counter-clockwise Rotation
 angular_velocity = wheel_speed / wheel_radius
@@ -247,31 +252,6 @@ while (abs(random_dummy[0]-robot_position[0]) < distance_tolerance):
     # get current Pioneer robot's postion
     error, robot_position = sim.simxGetObjectPosition(clientID, pioneer_handle, -1, sim.simx_opmode_blocking)
     print("Robot's Position:", robot_position)
-
-
-# # Move to the target position one axis at a time
-# while (abs(target_position[0]-robot_position[0]) > tolerance):
-
-#     # Move in the x-direction
-#     sim.simxSetJointTargetVelocity(clientID, left_motor_handle, 2, sim.simx_opmode_oneshot)
-#     sim.simxSetJointTargetVelocity(clientID, right_motor_handle, 2, sim.simx_opmode_oneshot)
-#     # get current Pioneer robot's postion
-#     error, robot_position = sim.simxGetObjectPosition(clientID, pioneer_handle, -1, sim.simx_opmode_blocking)
-#     print("Robot's Position:", robot_position)
-
-
-# # Stop moving in the x-direction
-# sim.simxSetJointTargetVelocity(clientID, left_motor_handle, 0, sim.simx_opmode_oneshot)
-# sim.simxSetJointTargetVelocity(clientID, right_motor_handle, 0, sim.simx_opmode_oneshot)
-
-
-
-# Clockwise Rotation
-# outer_wheel_velocity = -angular_velocity * (wheel_distance / 2)
-# inner_wheel_velocity = angular_velocity * (wheel_distance / 2)
-# Counter-clockwise Rotation
-# inner_wheel_velocity = -angular_velocity * (wheel_distance / 2)
-# outer_wheel_velocity = angular_velocity * (wheel_distance / 2)
 
 # Disconnect from the CoppeliaSim server
 sim.simxFinish(clientID)
