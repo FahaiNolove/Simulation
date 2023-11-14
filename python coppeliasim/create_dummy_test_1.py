@@ -201,6 +201,9 @@ print("Robot's Orientation:", current_orientation)
 radian_tolerance = 1 * (pi / 180)  # 5 degrees tolerance (0.08727 radians)
 distance_tolerance = 0.4  # set the tolerance 0.05 from dummy position 
 
+# Control loop to monitor the robot's orientation
+target_angle = math.radians(180) # Turn by from 90 to 180 degrees
+
 # Counter-clockwise Rotation
 angular_velocity = wheel_speed / wheel_radius
 inner_wheel_velocity = -angular_velocity * (wheel_distance / 2)
