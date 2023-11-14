@@ -81,7 +81,7 @@ if clientID == -1:
 
 # let AMR follows a path
 ##################################################################################################################################
-#Get handles for the Pioneer robot and its wheels
+# Get handles for the Pioneer robot and its wheels
 error, pioneer_handle = sim.simxGetObjectHandle(clientID, 'Pioneer_p3dx', sim.simx_opmode_oneshot_wait)
 error, left_motor_handle = sim.simxGetObjectHandle(clientID, 'Pioneer_p3dx_leftMotor', sim.simx_opmode_oneshot_wait)
 error, right_motor_handle = sim.simxGetObjectHandle(clientID, 'Pioneer_p3dx_rightMotor', sim.simx_opmode_oneshot_wait)
@@ -121,6 +121,10 @@ wheel_radius = 0.195  # Radius of the wheels (adjust for your robot)
 # Calculate the required wheel velocities
 wheel_speed = 1  # Adjust the speed as needed
 angular_velocity = wheel_speed / wheel_radius
+# Clockwise Rotation
+# outer_wheel_velocity = -angular_velocity * (wheel_distance / 2)
+# inner_wheel_velocity = angular_velocity * (wheel_distance / 2)
+# Counter-clockwise Rotation
 inner_wheel_velocity = -angular_velocity * (wheel_distance / 2)
 outer_wheel_velocity = angular_velocity * (wheel_distance / 2)
 
