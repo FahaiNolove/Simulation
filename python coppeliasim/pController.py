@@ -30,7 +30,7 @@ class Client:
         sim.simxFinish(-1) # just in case, close all opened connections
         self.id=sim.simxStart('127.0.0.1',19997,True,True,5000,5) # Connect to CoppeliaSim
         return self
-    
+     
     def __exit__(self,*err):
         sim.simxFinish(-1)
 

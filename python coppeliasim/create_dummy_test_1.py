@@ -245,8 +245,9 @@ while abs(current_orientation[2] - target_angle) >= radian_tolerance:
             sim.simxSynchronousTrigger(clientID)
             _, current_orientation = sim.simxGetObjectOrientation(clientID, pioneer_handle, -1, sim.simx_opmode_streaming)
  
-sim.simxSetJointTargetVelocity(clientID, left_motor_handle, 2, sim.simx_opmode_oneshot)
-sim.simxSetJointTargetVelocity(clientID, right_motor_handle, 2, sim.simx_opmode_oneshot)
+while True:
+    sim.simxSetJointTargetVelocity(clientID, left_motor_handle, 0, sim.simx_opmode_oneshot)
+    sim.simxSetJointTargetVelocity(clientID, right_motor_handle, 0, sim.simx_opmode_oneshot)
 
 # while (dx**2+dy**2) >= tolerance**2:
 #     _, current_orientation = sim.simxGetObjectOrientation(clientID, pioneer_handle, -1, sim.simx_opmode_streaming)
